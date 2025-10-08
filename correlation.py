@@ -1,7 +1,4 @@
-#correlation
-
-
-
+#correlation.py
 #code for correlation function
  
 import matplotlib.pyplot as plt
