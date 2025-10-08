@@ -1,8 +1,6 @@
-print("Hi david if you can see this i made git work")
-
 #correlation
 
-"""
+
 
 #code for correlation function
  
@@ -44,4 +42,3 @@ def display_graph(t):
 if __name__ == "__main__":
     display_graph(0.5) 
     
-"""
