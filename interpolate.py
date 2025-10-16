@@ -16,7 +16,8 @@ def interpolate(data, t):
     b = data[node + 1]
     return a * (1 - t) + b * t
 
-data = [random.randint(-10, 10) for _ in range(3)]
+if __name__ == "__main__":
+    data = [random.randint(-10, 10) for _ in range(3)]
 
-for i in range(20):
-    print(interpolate(data, i / 10))
+    for i in range(20):
+        print(interpolate(data, i / 10))
