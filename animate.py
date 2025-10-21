@@ -1,5 +1,6 @@
 import matplotlib.animation as animation 
 import matplotlib.pyplot as plt 
+import matplotlib.style as style
 import numpy as np
 
 import random
@@ -35,8 +36,8 @@ def init():
 def display_graph(j):
     t = (j - 100) * 0.01
 
-    x_vals: list = []
-    y_vals: list[list] = [[], [], [], []]
+    x_vals: list[float] = []
+    y_vals: list[list[float]] = [[], [], [], []]
     for i in range(-100, 100, 1):
         x = i / 100
         x_vals.append(x)
@@ -56,6 +57,8 @@ def display_graph(j):
     return line,
 
 if __name__ == "__main__":
+    style.use('fast')
+
     fig = plt.figure() 
     axis = plt.axes(xlim =(-1, 1),
                     ylim =(-0.5, 1.5)) 
@@ -69,4 +72,4 @@ if __name__ == "__main__":
     anim = animation.FuncAnimation(fig, display_graph, frames = 200, interval=0)
     
     # save the animation as a gif
-    anim.save('cross_correlation.gif', writer = 'Pillow', fps = 30)
+    anim.save('graphs/cross_correlation_example.gif', writer = 'Pillow', fps = 30)

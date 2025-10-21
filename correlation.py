@@ -7,11 +7,30 @@ import random
 from interpolate import interpolate
 import data
 
-def correlation(t: list[float], f: list, g: list):
-    if not (len(t) == len(f) and len(t) == len(g)):
+def correlation(t: list[float], f: list[data.Pos], g: list[data.Pos]) -> float:
+    if not (len(t) == len(f ) and len(t) == len(g)):
         raise Exception("Cannot cross-correlate with arrays of different lengths")
-
     
+    sum: float = 0.0
+
+    for i in range(len(t) - 1):
+        dt = t[i + 1] - t[i]
+        prod = data.dot(f[i], g[i]) # between 0 and 1, higher values mean points are closer together
+        sum += prod * dt
+        print(prod)
+
+    return sum
+
+
+def get_similarity(f: list[data.Pos], g: list[data.Pos]) -> list[float]:
+    result: list[float] = []
+
+    for i in range(len(f)):
+        similarity = 1.0 / (1.0 + data.dot(f[i] - g[i], f[i] - g[i])) # between 0 and 1, higher values mean points are closer together
+        result.append(similarity)
+
+    return result
+
 
 if __name__ == "__main__":
     d: list[data.Data] = data.lookup("data/r1/tracking_r1_prt_1.csv")
@@ -21,10 +40,12 @@ if __name__ == "__main__":
     hand: list[data.Pos] = []
     eye: list[data.Pos] = []
 
+    # read the data into the lists and convert ranges to -1 to 1 for easier processing
     for val in d:
         time.append(val.time)
-        target.append(val.target)
-        hand.append(val.hand)
-        eye.append(val.eye)
+        target.append(val.target * (2 / 3840, 2 / 2160) - (1, 1))
+        hand.append(val.hand * (2 / 3840, 2 / 2160) - (1, 1))
+        eye.append(val.eye * 2 - (1, 1))
 
-    print(target)
+    print(get_similarity(target, hand))
+    print(correlation(time, target, hand))    

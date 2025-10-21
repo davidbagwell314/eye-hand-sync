@@ -1,35 +1,74 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
+import matplotlib.animation as animation
+import matplotlib.style as style
 
-# Create a figure and axis
-fig, ax = plt.subplots()
-ax.set_xlim(0, 2 * np.pi)
-ax.set_ylim(-1.5, 1.5)
+import data
 
-# Number of lines to animate
-num_lines = 3
+# display the graphs
+def display_graph(t):
+    i = time_index[t]
 
-# Initialize lines
-lines = [ax.plot([], [], lw=2)[0] for _ in range(num_lines)]
+    x_vals[0].append(target[i].x)
+    y_vals[0].append(target[i].y)
+        
+    x_vals[1].append(hand[i].x)
+    y_vals[1].append(hand[i].y)
+        
+    x_vals[2].append(eye[i].x)
+    y_vals[2].append(eye[i].y)
 
-# Data for animation
-x = np.linspace(0, 2 * np.pi, 100)
-y_data = [np.sin(x + phase) for phase in np.linspace(0, 2 * np.pi, num_lines + 1)]
+    if (t > 1):
+        plt.plot(x_vals[0][(t-2):t], y_vals[0][(t-2):t], color="red", label='target')
+        plt.plot(x_vals[1][(t-2):t], y_vals[1][(t-2):t], color="green", label='hand')
+        plt.plot(x_vals[2][(t-2):t], y_vals[2][(t-2):t], color="blue", label='eye')
 
-# Initialization function
-def init():
-    for line in lines:
-        line.set_data([], [])
-    return lines
+    print("Currently processing:", t)
 
-# Animation function
-def update(frame):
-    for line, y in zip(lines, y_data):
-        line.set_data(x[:frame], y[:frame])
-    return lines
+    return line,
 
-# Create the animation
-ani = FuncAnimation(fig, update, frames=len(x), init_func=init, blit=True)
+if __name__ == "__main__":
+    d: list[data.Data] = data.lookup("data/r1/tracking_r1_prt_1.csv", reject=False)
 
-plt.show()
+    time_index: list[int] = []
+    time: list[float] = []
+    target: list[data.Pos] = []
+    hand: list[data.Pos] = []
+    eye: list[data.Pos] = []
+
+    timer = 0.0
+
+    # read the data into the lists and convert ranges to -1 to 1 for easier processing
+    for i, val in enumerate(d):
+        time.append(val.time)
+        target.append(val.target * (1.56444444444 * 2 / 3840, 1.45833333333 * 2 / 2160) - (1, 1))
+        hand.append(val.hand * (1.56444444444 * 2 / 3840, 1.45833333333 * 2 / 2160) - (1, 1))
+        eye.append(val.eye * 2 - (1, 1))
+
+        # don't plot the graph for each data point; plot it for each frame
+        if ((val.time - timer) > (1.0 / 10.0) and len(time_index) < 30 * 10):
+            timer = val.time
+            for j in range(int((val.time - timer) / (1.0 / 10.0)) + 1):
+                time_index.append(i)
+
+    style.use('fast')
+
+    x_vals: list[list[float]] = [[], [], []]
+    y_vals: list[list[float]] = [[], [], []]
+
+    fig = plt.figure() 
+    axis = plt.axes(xlim =(-1, 1),
+                    ylim =(-1, 1)) 
+
+    num_lines = 3 # the gif displays 4 different graphs
+
+    # Initialize lines
+    line, = axis.plot([], [])
+
+    # calling the animation function     
+    anim = animation.FuncAnimation(fig, display_graph, frames = len(time_index), interval=0, blit=True)
+
+    plt.legend()
+    
+    # save the animation as a gif
+    anim.save('graphs/data_points.gif', writer = 'Pillow', fps = 10)
