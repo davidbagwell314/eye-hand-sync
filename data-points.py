@@ -38,14 +38,11 @@ if __name__ == "__main__":
 
     timer = 0.0
 
-    res_x = 4096
-    res_y = 2160
-
     # read the data into the lists and convert ranges to -1 to 1 for easier processing
     for i, val in enumerate(d):
         time.append(val.time)
-        target.append(val.target * (1.56444444444 * 2 / (res_x), 1.45833333333 * 2 / (res_y)) - (1, 1))
-        hand.append(val.hand * (1.56444444444 * 2 / (res_x), 1.45833333333 * 2 / (res_y)) - (1, 1))
+        target.append(val.target * (2 / data.res_x, 2 / data.res_y) - (1, 1))
+        hand.append(val.hand * (2 / data.res_x, 2 / data.res_y) - (1, 1))
         eye.append(val.eye * 2 - (1, 1))
 
         # don't plot the graph for each data point; plot it for each frame

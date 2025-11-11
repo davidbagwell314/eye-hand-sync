@@ -35,11 +35,6 @@ def get_similarity(f: list[data.Pos], g: list[data.Pos]) -> list[float]:
 
 
 if __name__ == "__main__":
-    # resolution of monitor
-    res_x = 4096
-    res_y = 2160
-
-
     d: list[data.Data] = data.lookup("data/r1/tracking_r1_prt_1.csv")
 
     time: list[float] = []
@@ -50,13 +45,13 @@ if __name__ == "__main__":
     # read the data into the lists and convert ranges to -1 to 1 for easier processing
     for val in d:
         time.append(val.time)
-        target.append(val.target * (2 / res_x, 2 / res_y) - (1, 1))
-        hand.append(val.hand * (2 / res_x, 2 / res_y) - (1, 1))
+        target.append(val.target * (2 / data.res_x, 2 / data.res_y) - (1, 1))
+        hand.append(val.hand * (2 / data.res_x, 2 / data.res_y) - (1, 1))
         eye.append(val.eye * 2 - (1, 1))
 
     sum = 0
     for x in range(3600):
-        sum += correlation(x, time, target, hand)
+        sum += correlation(x, time, target, target)
 
     sum *= 0.00833564879133093
 
