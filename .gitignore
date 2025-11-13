@@ -1,2 +1,4 @@
 __pycache__
 .venv
+__pycache__/interpolate.cpython-313.pyc
+__pycache__/data.cpython-313.pyc

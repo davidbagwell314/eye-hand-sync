@@ -36,7 +36,7 @@ def get_similarity(f: list[data.Pos], g: list[data.Pos]) -> list[float]:
 
 if __name__ == "__main__":
     # resolution of monitor
-    res_x = 4096
+    res_x = 3840 # maybe 4096?
     res_y = 2160
 
 
