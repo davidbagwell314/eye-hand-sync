@@ -72,4 +72,4 @@ if __name__ == "__main__":
     anim = animation.FuncAnimation(fig, display_graph, frames = 200, interval=0)
     
     # save the animation as a gif
-    anim.save('graphs/cross_correlation_example.gif', writer = 'Pillow', fps = 30)
+    anim.save('graphs/cross_correlation.gif', writer = 'Pillow', fps = 30)

@@ -89,6 +89,9 @@ def lookup(data_filename: str, reject: bool = True) -> list:
     file.close()
     return data
 
+res_x = 2560
+res_y = 1440
+
 if __name__ == "__main__":
     data = lookup("data/r3/tracking_r3_prt_4.csv")
     for row in data:
