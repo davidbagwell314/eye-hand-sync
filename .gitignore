@@ -1,5 +1,4 @@
 __pycache__
 .venv
 csv_data/tracking/ptbs.mat
-__pycache__/interpolate.cpython-313.pyc
-__pycache__/data.cpython-313.pyc
+spare_parts
