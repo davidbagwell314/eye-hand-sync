@@ -1,4 +1,5 @@
 __pycache__
 .venv
-csv_data/tracking/ptbs.mat
+data/tracking/ptbs.mat
 spare_parts
+src/emc_tools.egg-info
