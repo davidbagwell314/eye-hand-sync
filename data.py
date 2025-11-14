@@ -54,10 +54,28 @@ class Data:
     
     def __repr__(self):
         return '{' + f"{self.time}, {self.target}, {self.hand}, {self.eye}" + '}'
+class TMT:
+    time: float
+    hand: Pos
+    eye: Pos
+
+    def __init__(self, time=0.0, hand=Pos(), eye=Pos()):
+        self.time = 0.0
+        self.hand = hand
+        self.eye = eye
+    
+    def __repr__(self):
+        return '{' + f"{self.time}, {self.hand}, {self.eye}" + '}'
 
 def dot(a: Pos | None, b: Pos | None) -> float:
     if isinstance(a, Pos) and isinstance(b, Pos):
         return a.x * b.x + a.y * b.y
+    else:
+        return 0.0
+    
+def similarity(a: Pos | None, b: Pos | None) -> float:
+    if isinstance(a, Pos) and isinstance(b, Pos):
+        return 1 / (1 + dot(a - b, a - b))
     else:
         return 0.0
 
@@ -78,13 +96,26 @@ def lookup(data_filename: str, reject: bool = True) -> list:
                     valid = False
 
         if valid:
-            row_data: Data = Data()
-            row_data.time = float(row[0])
-            row_data.target = Pos(float(row[1]), float(row[2]))
-            row_data.hand = Pos(float(row[3]), float(row[4]))
-            row_data.eye = Pos(float(row[5]), float(row[6]))
+            if len(row) == 7:
+                row_data: Data = Data()
+                row_data.time = float(row[0])
+                row_data.target = Pos(float(row[1]), float(row[2]))
+                row_data.hand = Pos(float(row[3]), float(row[4]))
+                row_data.eye = Pos(float(row[5]), float(row[6]))
 
-            data.append(row_data)
+                data.append(row_data)
+            elif len(row) == 5:
+                row_data: TMT = TMT()
+                row_data.time = float(row[0])
+                row_data.hand = Pos(float(row[1]), float(row[2]))
+                row_data.eye = Pos(float(row[3]), float(row[4]))
+
+                data.append(row_data)
+            elif len(row) == 2:
+                row_data: Pos = Pos()
+                row_data = Pos(float(row[0]), float(row[1]))
+
+                data.append(row_data)
 
     file.close()
     return data
