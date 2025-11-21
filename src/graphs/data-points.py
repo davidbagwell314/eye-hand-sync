@@ -19,8 +19,8 @@ def display_graph(t):
     y_vals[2].append(eye[i].y)
 
     if (t > 1):
-        plt.plot(x_vals[0][(t-2):t], y_vals[0][(t-2):t], color="red", label='target')
-        plt.plot(x_vals[1][(t-2):t], y_vals[1][(t-2):t], color="green", label='hand')
+        #plt.plot(x_vals[0][(t-2):t], y_vals[0][(t-2):t], color="red", label='target')
+        #plt.plot(x_vals[1][(t-2):t], y_vals[1][(t-2):t], color="green", label='hand')
         plt.plot(x_vals[2][(t-2):t], y_vals[2][(t-2):t], color="blue", label='eye')
 
     print("Currently processing:", t)

@@ -81,9 +81,12 @@ def dot(a: Pos | None, b: Pos | None) -> float:
     
 def similarity(a: Pos | None, b: Pos | None) -> float:
     if isinstance(a, Pos) and isinstance(b, Pos):
-        return 1 / (1 + dot(a - b, a - b))
+        if a.x == float('NaN') or a.y == float('NaN') or b.x == float('NaN') or b.y == float('NaN'):  
+            return float('NaN')
+        else:
+            return dot(a - b, a - b)
     else:
-        return 0.0
+        return float('NaN')
 
 #data lookup function
 def lookup(data_filename: str, reject: bool = True) -> list:
@@ -128,8 +131,3 @@ def lookup(data_filename: str, reject: bool = True) -> list:
 
 res_x = 2560
 res_y = 1440
-
-if __name__ == "__main__":
-    data = lookup("data/r3/tracking_r3_prt_4.csv")
-    for row in data:
-        print(row)
