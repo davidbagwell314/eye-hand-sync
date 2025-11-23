@@ -1,4 +1,5 @@
 import csv
+import ast
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -87,44 +88,82 @@ def similarity(a: Pos | None, b: Pos | None) -> float:
             return dot(a - b, a - b)
     else:
         return float('NaN')
+    
+def cast_string(value: str):
+    if not isinstance(value, str):
+        raise TypeError("Input must be a string.")
+
+    value = value.strip()
+
+    # Handle common literals manually
+    if value.lower() == "true":
+        return True
+    if value.lower() == "false":
+        return False
+    if value.lower() == "none" or value.lower() == "null":
+        return None
+
+    # Try numeric conversions
+    try:
+        if "." in value or "e" in value.lower():
+            return float(value)
+        return int(value)
+    except ValueError:
+        pass
+
+    # Try safe literal evaluation (list, dict, tuple, etc.)
+    try:
+        return ast.literal_eval(value)
+    except (ValueError, SyntaxError):
+        pass
+
+    # Fallback: return as string
+    return value
 
 #data lookup function
-def lookup(data_filename: str, reject: bool = True) -> list:
+def lookup(data_filename: str, reject: bool = True, raw: bool = False) -> list:
     data = []
     file = open(data_filename, 'r')
 
     reader = csv.reader(file)
+
     for row in reader:
-        row = tuple(row)
+        if raw:
+            row_list: list = list(row)
+            for i, x in enumerate(row):
+                row_list[i] = cast_string(x)
+            data.append(tuple(row_list))
+        else:
+            row = tuple(row)
 
-        valid = True
+            valid = True
 
-        if reject:
-            for element in row:
-                if element == "NaN":
-                    valid = False
+            if reject:
+                for element in row:
+                    if element == "NaN":
+                        valid = False
 
-        if valid:
-            if len(row) == 7:
-                row_data: Data = Data()
-                row_data.time = float(row[0])
-                row_data.target = Pos(float(row[1]), float(row[2]))
-                row_data.hand = Pos(float(row[3]), float(row[4]))
-                row_data.eye = Pos(float(row[5]), float(row[6]))
+            if valid:
+                if len(row) == 7:
+                    row_data: Data = Data()
+                    row_data.time = float(row[0])
+                    row_data.target = Pos(float(row[1]), float(row[2]))
+                    row_data.hand = Pos(float(row[3]), float(row[4]))
+                    row_data.eye = Pos(float(row[5]), float(row[6]))
 
-                data.append(row_data)
-            elif len(row) == 5:
-                row_tmt: TMT = TMT()
-                row_tmt.time = float(row[0])
-                row_tmt.hand = Pos(float(row[1]), float(row[2]))
-                row_tmt.eye = Pos(float(row[3]), float(row[4]))
+                    data.append(row_data)
+                elif len(row) == 5:
+                    row_tmt: TMT = TMT()
+                    row_tmt.time = float(row[0])
+                    row_tmt.hand = Pos(float(row[1]), float(row[2]))
+                    row_tmt.eye = Pos(float(row[3]), float(row[4]))
 
-                data.append(row_tmt)
-            elif len(row) == 2:
-                row_pos: Pos = Pos()
-                row_pos = Pos(float(row[0]), float(row[1]))
+                    data.append(row_tmt)
+                elif len(row) == 2:
+                    row_pos: Pos = Pos()
+                    row_pos = Pos(float(row[0]), float(row[1]))
 
-                data.append(row_pos)
+                    data.append(row_pos)
 
     file.close()
     return data
