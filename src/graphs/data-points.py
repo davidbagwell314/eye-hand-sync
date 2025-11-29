@@ -1,34 +1,45 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
+from matplotlib.animation import FuncAnimation, PillowWriter
 import matplotlib.style as style
 
-from emc_tools import data
+from emc_tools import data, interpolate
+
+def init(): 
+    t_line.set_data([target[0].x], [target[0].y])
+    h_line.set_data([hand[0].x], [hand[0].y])
+    e_line.set_data([eye[0].x], [eye[0].y])
+    
+    axis.set_xlim(-1.0, 1.0)
+    axis.set_ylim(-1.0, 1.0)
+
+    return t_line, h_line, e_line
 
 # display the graphs
 def display_graph(t):
-    i = time_index[t]
+    i = np.linspace(0, t, t, endpoint=False).astype(int)
+    i = [time_index[j] for j in i]
+ 
+    x = [target[j].x for j in i]
+    y = [target[j].y for j in i]
+    t_line.set_data(x, y)
 
-    x_vals[0].append(target[i].x)
-    y_vals[0].append(target[i].y)
-        
-    x_vals[1].append(hand[i].x)
-    y_vals[1].append(hand[i].y)
-        
-    x_vals[2].append(eye[i].x)
-    y_vals[2].append(eye[i].y)
+    x = [hand[j].x for j in i]
+    y = [hand[j].y for j in i]
+    h_line.set_data(x, y)
+    
+    x = [eye[j].x for j in i]
+    y = [eye[j].y for j in i]
+    e_line.set_data(x, y)
 
-    if (t > 1):
-        plt.plot(x_vals[0][(t-2):t], y_vals[0][(t-2):t], color="red", label='target')
-        # plt.plot(x_vals[1][(t-2):t], y_vals[1][(t-2):t], color="green", label='hand')
-        # plt.plot(x_vals[2][(t-2):t], y_vals[2][(t-2):t], color="blue", label='eye')
+    L.get_texts()[0].set_text("Target")
+    L.get_texts()[1].set_text("Hand")
+    L.get_texts()[2].set_text("Eye")
 
-    print("Currently processing:", t)
-
-    return line,
+    return t_line, h_line, e_line
 
 if __name__ == "__main__":
-    d: list[data.Data] = data.lookup("data/tracking/tracking_r1_prt_3.csv", reject=False)
+    d: list[data.Data] = data.lookup("data/tracking/tracking_r2_prt_1.csv", reject=False)
 
     time_index: list[int] = []
     time: list[float] = []
@@ -38,6 +49,10 @@ if __name__ == "__main__":
 
     timer = 0.0
 
+    fps = 60
+    time_start = 0
+    time_end = 1
+
     # read the data into the lists and convert ranges to -1 to 1 for easier processing
     for i, val in enumerate(d):
         time.append(val.time)
@@ -45,30 +60,31 @@ if __name__ == "__main__":
         hand.append(val.hand * 2 - (1, 1))
         eye.append(val.eye * 2 - (1, 1))
 
-        if True:
-        #if val.time >= 23 and val.time <= 26:
-            # don't plot the graph for each data point; plot it for each frame
-            if ((val.time - timer) > (1.0 / 10.0) and len(time_index) < 30 * 10):
-                timer = val.time
-                for j in range(int((val.time - timer) / (1.0 / 10.0)) + 1):
-                    time_index.append(i)
+    times = np.linspace(time_start, time_end, (time_end - time_start) * fps, endpoint=False)
+    time_index = [interpolate.search(time, t) for t in times]
 
     style.use('fast')
 
-    x_vals: list[list[float]] = [[], [], []]
-    y_vals: list[list[float]] = [[], [], []]
+    fig, axis = plt.subplots()
 
-    fig = plt.figure() 
-    axis = plt.axes(xlim =(-1, 1),
-                    ylim =(-1, 1)) 
+    t_line, = axis.plot([], [], lw = 2, color='tab:red')
+    h_line, = axis.plot([], [], lw = 2, color='tab:green')
+    e_line, = axis.plot([], [], lw = 2, color='tab:blue')
 
-    num_lines = 3 # the gif displays 3 different graphs
+    L=axis.legend(handles=[t_line, h_line, e_line], loc=1)
 
-    # Initialize lines
-    line, = axis.plot([], [])
+    if False:
+        # calling the animation function     
+        anim = FuncAnimation(fig, display_graph, init_func = init, frames = len(time_index), interval=1000//fps, blit=True)
+        
+        # save the animation as a gif
+        anim.save('graphs/data-paths.gif', writer=PillowWriter(fps=fps))
 
-    # calling the animation function     
-    anim = animation.FuncAnimation(fig, display_graph, frames = len(time_index), interval=0, blit=True)
-    
-    # save the animation as a gif
-    anim.save('graphs/target-points.gif', writer = 'Pillow', fps = 10)
+    elif True:
+        init()
+        display_graph(len(time_index))
+        plt.savefig('graphs/data-paths-1s')
+
+    else:
+        display_graph(len(time_index))
+        plt.savefig('graphs/saccade.png')
