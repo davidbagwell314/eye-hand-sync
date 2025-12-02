@@ -39,7 +39,7 @@ def display_graph(t):
     return t_line, h_line, e_line
 
 if __name__ == "__main__":
-    d: list[data.Data] = data.lookup("data/tracking/tracking_r2_prt_1.csv", reject=False)
+    d: list[data.Data] = data.lookup("data/tracking_circle/tracking_circle_r2_prt_1.csv", reject=False)
 
     time_index: list[int] = []
     time: list[float] = []
@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
     fps = 60
     time_start = 0
-    time_end = 1
+    time_end = 30
 
     # read the data into the lists and convert ranges to -1 to 1 for easier processing
     for i, val in enumerate(d):
@@ -73,7 +73,7 @@ if __name__ == "__main__":
 
     L=axis.legend(handles=[t_line, h_line, e_line], loc=1)
 
-    if False:
+    if True:
         # calling the animation function     
         anim = FuncAnimation(fig, display_graph, init_func = init, frames = len(time_index), interval=1000//fps, blit=True)
         

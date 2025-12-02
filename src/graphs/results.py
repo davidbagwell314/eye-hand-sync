@@ -23,6 +23,24 @@ if __name__ == "__main__":
     participant = 3
     repetition = 1
 
+    remove_results = []
+
+    updated_results = []
+    for result in results:
+        if result[5] < 2000 and result[5] > -2000  and result[7] < 2000 and result[7] > -2000  and result[9] < 2000 and result[9] > -2000: # remove outliers
+            if result[3] == 1 + result[2]:
+                updated_results.append(result)
+        elif not (result[0], result[1]) in remove_results:
+            remove_results.append((result[0], result[1]))
+
+    results = updated_results
+    updated_results = []
+    for result in results:
+        if not (result[0], result[1]) in remove_results:
+            updated_results.append(result)
+
+    results = updated_results
+
     means = []
     for i in range(30):
         mean = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
@@ -34,9 +52,10 @@ if __name__ == "__main__":
 
         means.append(tuple(map(lambda x: x / total, mean)))
 
+    
     updated_results = []
     for result in results:
-        if result[0] == participant and result[1] == repetition and not(result[2] == 0 and result[3] == 30):
+        if result[0] == participant and result[1] == repetition:
             updated_results.append(result)
 
     results = updated_results
@@ -88,13 +107,13 @@ if __name__ == "__main__":
     fig, axes = plt.subplots(3, dpi=1000, figsize=(6, 10))
 
     # coordination
-    axes[0].plot(m_times, m_hand_coordination, color="green", alpha=0.25)
-    axes[0].plot(m_times, m_eye_coordination, color="blue", alpha=0.25)
-    axes[0].plot(m_times, m_both_coordination, color="orange", alpha=0.25)
+    """axes[0].plot(m_times, m_hand_coordination, color="tab:green", alpha=0.25)
+    axes[0].plot(m_times, m_eye_coordination, color="tab:blue", alpha=0.25)
+    axes[0].plot(m_times, m_both_coordination, color="tab:orange", alpha=0.25)"""
 
-    axes[0].plot(times, hand_coordination, color="green", label="Hand")
-    axes[0].plot(times, eye_coordination, color="blue", label="Eye")
-    axes[0].plot(times, both_coordination, color="orange", label="Hand vs eye")
+    axes[0].plot(times, hand_coordination, color="tab:green", label="Hand")
+    axes[0].plot(times, eye_coordination, color="tab:blue", label="Eye")
+    axes[0].plot(times, both_coordination, color="tab:orange", label="Hand vs eye")
     
     axes[0].set_xlim(0, 30)
     axes[0].set_ylim(0, 100)
@@ -107,13 +126,13 @@ if __name__ == "__main__":
     axes[0].legend()
 
     # time delay
-    axes[1].plot(m_times, m_hand_delay, color="green", alpha=0.25)
+    """axes[1].plot(m_times, m_hand_delay, color="tab:green", alpha=0.25)
     axes[1].plot(m_times, m_eye_delay, color="blue", alpha=0.25)
-    axes[1].plot(m_times, m_both_delay, color="orange", alpha=0.25)
+    axes[1].plot(m_times, m_both_delay, color="orange", alpha=0.25)"""
 
-    axes[1].plot(times, hand_delay, color="green", label="Hand vs target")
-    axes[1].plot(times, eye_delay, color="blue", label="Eye vs target")
-    axes[1].plot(times, both_delay, color="orange", label="Hand vs eye")
+    axes[1].plot(times, hand_delay, color="tab:green", label="Hand vs target")
+    axes[1].plot(times, eye_delay, color="tab:blue", label="Eye vs target")
+    axes[1].plot(times, both_delay, color="tab:orange", label="Hand vs eye")
 
     axes[1].set_xlim(0, 30)
     axes[1].set_ylim(0, 300)

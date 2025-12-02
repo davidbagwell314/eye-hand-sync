@@ -39,7 +39,7 @@ if __name__ == "__main__":
         print("participant,repetition,start time,end time,hand coordination,hand delay,eye coordination,eye delay,overall coordination,overall delay")
         for participant in range(1, 12):
             for repetition in range(1, 6):
-                d: list[data.Data] = data.lookup(f"data/tracking/tracking_r{repetition}_prt_{participant}.csv", reject=True)
+                d: list[data.Data] = data.lookup(f"data/tracking_circle/tracking_circle_r{repetition}_prt_{participant}.csv", reject=True)
 
                 time: list[float] = []
                 target: list[data.Pos] = []
